@@ -1,4 +1,5 @@
 import { Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
+import { getNoise } from "../systems/noise3D";
 
 class Terrain extends Mesh {
   private localUp: Vector3;
@@ -30,7 +31,8 @@ class Terrain extends Mesh {
       const y: number = this.geometry.attributes.position.getY(i) + this.localUp.y;
       const z: number = this.geometry.attributes.position.getZ(i) + this.localUp.z;
 
-      const n: Vector3 = new Vector3(x, y, z).normalize().multiplyScalar(this.size);
+      const n: Vector3 = new Vector3(x, y, z).normalize();
+      n.multiplyScalar(this.size * getNoise(n));
 
       this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
       this.geometry.attributes.normal.setXYZ(i, n.x, n.y, n.z);

@@ -15,7 +15,7 @@ class Planet extends Object3D {
     ];
 
     for (let i: number = 0; i < 6; i++) {
-      const side: Mesh = new Terrain(directions[i], 4, 128);
+      const side: Mesh = new Terrain(directions[i], 2, 128);
 
       this.attach(side);
     }
