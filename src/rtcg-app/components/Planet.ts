@@ -1,6 +1,5 @@
-// import Terrain from "./Terrain";
+import Terrain from "./Terrain";
 import { Mesh, Object3D, Vector3 } from "three";
-import createPlane from "./plane";
 
 class Planet extends Object3D {
   constructor() {
@@ -16,10 +15,10 @@ class Planet extends Object3D {
     ];
 
     for (let i: number = 0; i < 6; i++) {
-      const side: Mesh = createPlane(2, 2);
+      const side: Mesh = new Terrain(directions[i], 2, 10);
 
-      side.lookAt(directions[i]);
-      side.position.add(directions[i]);
+      // side.lookAt(directions[i]);
+      // side.position.add(directions[i]);
 
       this.attach(side);
     }

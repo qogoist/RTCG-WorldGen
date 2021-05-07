@@ -1,82 +1,37 @@
-import * as THREE from "three";
-import NoiseGenerator from "../systems/noise";
+import { Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
 
-interface TerrainData {
-  width: number;
-  height: number;
-  widthSegments: number;
-  heightSegments: number;
-  octaves: number;
-  totalHeight: number;
-  scale: number;
-  exponent: number;
-  persistence: number;
-  lacunarity: number;
-}
+class Terrain extends Mesh {
+  private localUp: Vector3;
 
-class Terrain extends THREE.Mesh {
-  constructor(terrainData: TerrainData) {
-    const geometry: THREE.PlaneGeometry = Terrain.generateGeometry(terrainData);
-    const material: THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({
-      wireframe: false,
-      color: 0x505050,
-      side: THREE.DoubleSide,
-      vertexColors: true,
+  constructor(localUp: Vector3, scale: number, resolution: number) {
+    const geometry: PlaneGeometry = new PlaneGeometry(scale, scale, resolution, resolution);
+    const material: MeshStandardMaterial = new MeshStandardMaterial({
+      color: 0x616161,
+      // wireframe: true,
     });
+
     super(geometry, material);
+
+    this.localUp = localUp;
+
     this.castShadow = true;
     this.receiveShadow = true;
-    this.rotation.x = -Math.PI / 2;
+
+    this.shapeMesh();
   }
 
-  static generateGeometry(terrainData: TerrainData): THREE.PlaneGeometry {
-    const geometry: THREE.PlaneGeometry = new THREE.PlaneGeometry(
-      terrainData.width,
-      terrainData.height,
-      terrainData.widthSegments,
-      terrainData.heightSegments
-    );
+  private shapeMesh(): void {
+    this.geometry.lookAt(this.localUp);
 
-    geometry.setAttribute(
-      "color",
-      new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.count * 3), 3)
-    );
+    for (let i: number = 0; i < this.geometry.attributes.position.count; i++) {
+      const x: number = this.geometry.attributes.position.getX(i) + this.localUp.x;
+      const y: number = this.geometry.attributes.position.getY(i) + this.localUp.y;
+      const z: number = this.geometry.attributes.position.getZ(i) + this.localUp.z;
 
-    const noise: NoiseGenerator = new NoiseGenerator(
-      terrainData.octaves,
-      terrainData.scale,
-      terrainData.persistence,
-      terrainData.lacunarity,
-      1
-    );
+      const n: Vector3 = new Vector3(x, y, z).normalize();
 
-    for (let i: number = 0; i < geometry.attributes.position.count; i++) {
-      let x: number = geometry.attributes.position.getX(i);
-      let y: number = geometry.attributes.position.getY(i);
-
-      x = x + 0.5;
-      y = (y - 0.5) * -1;
-
-      const h: number = noise.getValue(x, y);
-
-      const green: THREE.Color = new THREE.Color(0x46b00c);
-      const color: THREE.Color = new THREE.Color(0xffffff);
-      color.lerp(green, 1 - h);
-      geometry.attributes.color.setXYZ(i, color.r, color.g, color.b);
-
-      geometry.attributes.position.setZ(
-        i,
-        Math.pow(h, terrainData.exponent) * terrainData.totalHeight
-        // h
-      );
+      this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
     }
-
-    return geometry;
-  }
-
-  updateGeometry(geometry: THREE.BufferGeometry): void {
-    this.geometry.dispose();
-    this.geometry = geometry;
   }
 }
 
