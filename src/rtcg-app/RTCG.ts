@@ -12,7 +12,8 @@ import { createAmbientLight, createPointLight } from "./components/light";
 import createBox from "./components/box";
 // import createPlane from "./components/plane";
 import createSphere from "./components/sphere";
-import Terrain from "./components/terrain";
+// import Terrain from "./components/Terrain";
+import Planet from "./components/Planet";
 
 class RTCG {
   private camera: THREE.PerspectiveCamera;
@@ -34,18 +35,19 @@ class RTCG {
     this.scene.add(pointLight);
 
     // const floor: THREE.Mesh = createPlane(10, 10);
-    const floor: THREE.Mesh = new Terrain({
-      width: 10,
-      height: 10,
-      widthSegments: 128,
-      heightSegments: 128,
-      octaves: 8,
-      totalHeight: 10,
-      scale: 5,
-      exponent: 4,
-      persistence: 0.5,
-      lacunarity: 1.8,
-    });
+    // const floor: THREE.Mesh = new Terrain({
+    //   width: 10,
+    //   height: 10,
+    //   widthSegments: 128,
+    //   heightSegments: 128,
+    //   octaves: 8,
+    //   totalHeight: 10,
+    //   scale: 5,
+    //   exponent: 4,
+    //   persistence: 0.5,
+    //   lacunarity: 1.8,
+    // });
+    const floor: Planet = new Planet();
     this.scene.add(floor);
 
     const box: THREE.Mesh = createBox(2, 2, 2);
