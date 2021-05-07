@@ -2,17 +2,19 @@ import { Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
 
 class Terrain extends Mesh {
   private localUp: Vector3;
+  private size: number;
 
   constructor(localUp: Vector3, scale: number, resolution: number) {
-    const geometry: PlaneGeometry = new PlaneGeometry(scale, scale, resolution, resolution);
+    const geometry: PlaneGeometry = new PlaneGeometry(2, 2, resolution, resolution);
     const material: MeshStandardMaterial = new MeshStandardMaterial({
       color: 0x616161,
-      // wireframe: true,
+      wireframe: true,
     });
 
     super(geometry, material);
 
     this.localUp = localUp;
+    this.size = scale;
 
     this.castShadow = true;
     this.receiveShadow = true;
@@ -28,13 +30,11 @@ class Terrain extends Mesh {
       const y: number = this.geometry.attributes.position.getY(i) + this.localUp.y;
       const z: number = this.geometry.attributes.position.getZ(i) + this.localUp.z;
 
-      const n: Vector3 = new Vector3(x, y, z).normalize();
+      const n: Vector3 = new Vector3(x, y, z).normalize().multiplyScalar(this.size);
 
       this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
       this.geometry.attributes.normal.setXYZ(i, n.x, n.y, n.z);
     }
-
-    console.log(this.geometry.attributes);
   }
 }
 

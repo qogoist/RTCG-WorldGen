@@ -15,16 +15,10 @@ class Planet extends Object3D {
     ];
 
     for (let i: number = 0; i < 6; i++) {
-      const side: Mesh = new Terrain(directions[i], 2, 10);
-
-      // side.lookAt(directions[i]);
-      // side.position.add(directions[i]);
+      const side: Mesh = new Terrain(directions[i], 4, 128);
 
       this.attach(side);
     }
-
-    this.position.x = -4;
-    this.position.y = 1;
   }
 }
 
