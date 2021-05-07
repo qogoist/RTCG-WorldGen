@@ -31,7 +31,10 @@ class Terrain extends Mesh {
       const n: Vector3 = new Vector3(x, y, z).normalize();
 
       this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
+      this.geometry.attributes.normal.setXYZ(i, n.x, n.y, n.z);
     }
+
+    console.log(this.geometry.attributes);
   }
 }
 
