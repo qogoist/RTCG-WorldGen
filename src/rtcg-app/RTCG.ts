@@ -30,8 +30,24 @@ class RTCG {
     this.scene.add(ambientLight);
     this.scene.add(pointLight);
 
-    const planet: Planet = new Planet();
+    const planet: Planet = new Planet(42);
     this.scene.add(planet);
+
+    const planet2: Planet = new Planet(69);
+    this.scene.add(planet2);
+
+    this.animator.addAnimObject({
+      object: planet2,
+      tick: function (delta: number, time: number): void {
+        const x: number = Math.cos(time) * 5;
+        const z: number = Math.sin(time) * 5;
+
+        this.object.position.x = x;
+        this.object.position.z = z;
+
+        this.object.rotation.y += delta;
+      },
+    });
 
     const resizer: Resizer = new Resizer(container, this.camera, this.renderer);
     resizer.activate();

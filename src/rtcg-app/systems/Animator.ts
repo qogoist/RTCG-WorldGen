@@ -1,8 +1,8 @@
-import { Camera, Clock, Mesh, Object3D, WebGLRenderer } from "three";
+import { Camera, Clock, Object3D, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 interface IAnimationObject {
-  object: Mesh;
+  object: Object3D;
   tick: (delta: number, time: number) => void;
 }
 
