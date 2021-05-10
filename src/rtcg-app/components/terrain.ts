@@ -1,10 +1,12 @@
-import { Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
+import { BufferAttribute, Color, Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
 import INoiseFilter from "../systems/INoiseFilter";
 
 class Terrain extends Mesh {
   private localUp: Vector3;
   private size: number;
   private noiseFilters: NoiseFilterLayer[];
+  private min: number;
+  private max: number;
 
   constructor(localUp: Vector3, scale: number, resolution: number) {
     const geometry: PlaneGeometry = new PlaneGeometry(2, 2, resolution, resolution);
@@ -12,13 +14,21 @@ class Terrain extends Mesh {
       color: 0x616161,
       // wireframe: true,
       flatShading: true,
+      vertexColors: true,
     });
+
+    geometry.setAttribute(
+      "color",
+      new BufferAttribute(new Float32Array(geometry.attributes.position.count * 3), 3)
+    );
 
     super(geometry, material);
 
     this.localUp = localUp;
     this.size = scale;
     this.noiseFilters = [];
+    this.min = Infinity;
+    this.max = 0;
 
     this.castShadow = true;
     this.receiveShadow = true;
@@ -55,9 +65,15 @@ class Terrain extends Mesh {
 
       n.multiplyScalar(this.size * (1 + elevation));
 
+      const d: number = n.distanceTo(new Vector3(0, 0, 0));
+      this.min = Math.min(this.min, d);
+      this.max = Math.max(this.max, d);
+
       this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
       this.geometry.attributes.normal.setXYZ(i, n.x, n.y, n.z);
     }
+
+    this.createVertexColors();
   }
 
   public addNoiseFilter(
@@ -66,6 +82,26 @@ class Terrain extends Mesh {
     useMask: boolean = true
   ): void {
     this.noiseFilters.push({ filter, isMask, useMask });
+  }
+
+  private createVertexColors(): void {
+    for (let i: number = 0; i < this.geometry.attributes.position.count; i++) {
+      const x: number = this.geometry.attributes.position.getX(i);
+      const y: number = this.geometry.attributes.position.getY(i);
+      const z: number = this.geometry.attributes.position.getZ(i);
+
+      const distance: number = new Vector3(x, y, z).distanceTo(new Vector3(0, 0, 0));
+
+      const value: number = (distance - this.min) / (this.max - this.min);
+
+      const green: Color = new Color(0x46b00c);
+      let color: Color = new Color(0xffffff);
+      color.lerp(green, 1 - value);
+
+      if (distance <= this.size + 0.000001) color = new Color(0x0000ff);
+
+      this.geometry.attributes.color.setXYZ(i, color.r, color.g, color.b);
+    }
   }
 }
 
