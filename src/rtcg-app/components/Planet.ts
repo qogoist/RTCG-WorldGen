@@ -6,7 +6,7 @@ import RidgeNoiseFilter from "../systems/RidgeNoiseFilter";
 class Planet extends Object3D {
   private planetSeed: number;
 
-  constructor(seed: number) {
+  constructor(seed: number, size: number) {
     super();
 
     this.planetSeed = seed;
@@ -21,7 +21,7 @@ class Planet extends Object3D {
     ];
 
     for (let i: number = 0; i < 6; i++) {
-      const side: Terrain = new Terrain(directions[i], 1, 256);
+      const side: Terrain = new Terrain(directions[i], size, 256);
       side.addNoiseFilter(
         new SimpleNoiseFilter(this.planetSeed, 1.83, 0.71, 0.21, 5, 0.54, 1.1),
         true,

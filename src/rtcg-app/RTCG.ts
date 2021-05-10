@@ -30,10 +30,10 @@ class RTCG {
     this.scene.add(ambientLight);
     this.scene.add(pointLight);
 
-    const planet: Planet = new Planet(42);
+    const planet: Planet = new Planet(42, 2);
     this.scene.add(planet);
 
-    const planet2: Planet = new Planet(69);
+    const planet2: Planet = new Planet(69, 1);
     this.scene.add(planet2);
 
     this.animator.addAnimObject({
