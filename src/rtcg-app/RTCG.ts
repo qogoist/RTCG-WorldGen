@@ -49,6 +49,13 @@ class RTCG {
       },
     });
 
+    this.animator.addAnimObject({
+      object: planet,
+      tick: function (delta: number): void {
+        this.object.rotation.y += delta * 0.5;
+      },
+    });
+
     const resizer: Resizer = new Resizer(container, this.camera, this.renderer);
     resizer.activate();
 

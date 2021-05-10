@@ -4,7 +4,7 @@ import INoiseFilter from "../systems/INoiseFilter";
 class Terrain extends Mesh {
   private localUp: Vector3;
   private size: number;
-  private noiseFilters: { filter: INoiseFilter; isMask: boolean }[];
+  private noiseFilters: { filter: INoiseFilter; isMask: boolean; useMask: boolean }[];
 
   constructor(localUp: Vector3, scale: number, resolution: number) {
     const geometry: PlaneGeometry = new PlaneGeometry(2, 2, resolution, resolution);
@@ -35,10 +35,14 @@ class Terrain extends Mesh {
       const n: Vector3 = new Vector3(x, y, z).normalize();
 
       let elevation: number = 0;
-      let mask: number = 0;
+      let maskValue: number = 0;
 
       for (const filter of this.noiseFilters) {
-        if (filter.isMask) mask += filter.filter.evaluate(n);
+        if (filter.isMask) maskValue += filter.filter.evaluate(n);
+      }
+
+      for (const filter of this.noiseFilters) {
+        const mask: number = filter.useMask ? maskValue : 1;
 
         elevation += filter.filter.evaluate(n) * mask;
       }
@@ -50,8 +54,12 @@ class Terrain extends Mesh {
     }
   }
 
-  public addNoiseFilter(filter: INoiseFilter, isMask: boolean = false): void {
-    this.noiseFilters.push({ filter, isMask });
+  public addNoiseFilter(
+    filter: INoiseFilter,
+    isMask: boolean = false,
+    useMask: boolean = true
+  ): void {
+    this.noiseFilters.push({ filter, isMask, useMask });
   }
 }
 

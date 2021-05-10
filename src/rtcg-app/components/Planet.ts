@@ -24,9 +24,10 @@ class Planet extends Object3D {
       const side: Terrain = new Terrain(directions[i], 1, 256);
       side.addNoiseFilter(
         new SimpleNoiseFilter(this.planetSeed, 1.83, 0.71, 0.21, 5, 0.54, 1.1),
-        true
+        true,
+        false
       );
-      side.addNoiseFilter(new RidgeNoiseFilter(this.planetSeed, 2.4, 1.2, 0.05, 6, 0.72, 1.1));
+      side.addNoiseFilter(new RidgeNoiseFilter(this.planetSeed, 2.4, 1.2, 1.6, 6, 0.72, 1.1));
       side.buildMesh();
 
       this.attach(side);
