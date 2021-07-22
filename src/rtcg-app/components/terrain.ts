@@ -1,12 +1,13 @@
-import { BufferAttribute, Color, Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
+import { BufferAttribute, Color, Mesh, PlaneGeometry, MeshStandardMaterial, Vector3 } from "three";
 import INoiseFilter from "../systems/INoiseFilter";
 
 class Terrain extends Mesh {
+  public min: number;
+  public max: number;
+
   private localUp: Vector3;
   private size: number;
   private noiseFilters: NoiseFilterLayer[];
-  private min: number;
-  private max: number;
 
   constructor(localUp: Vector3, scale: number, resolution: number) {
     const geometry: PlaneGeometry = new PlaneGeometry(2, 2, resolution, resolution);
@@ -28,7 +29,7 @@ class Terrain extends Mesh {
     this.size = scale;
     this.noiseFilters = [];
     this.min = Infinity;
-    this.max = 0;
+    this.max = -Infinity;
 
     this.castShadow = true;
     this.receiveShadow = true;
@@ -50,7 +51,7 @@ class Terrain extends Mesh {
 
       for (const filter of this.noiseFilters) {
         if (filter.isMask) {
-          const value = filter.filter.evaluate(n);
+          const value: number = filter.filter.evaluate(n);
 
           maskValue += value;
           elevation += value;
@@ -72,8 +73,6 @@ class Terrain extends Mesh {
       this.geometry.attributes.position.setXYZ(i, n.x, n.y, n.z);
       this.geometry.attributes.normal.setXYZ(i, n.x, n.y, n.z);
     }
-
-    this.createVertexColors();
   }
 
   public addNoiseFilter(
@@ -84,7 +83,7 @@ class Terrain extends Mesh {
     this.noiseFilters.push({ filter, isMask, useMask });
   }
 
-  private createVertexColors(): void {
+  public createVertexColors(planetMin: number, planetMax: number): void {
     for (let i: number = 0; i < this.geometry.attributes.position.count; i++) {
       const x: number = this.geometry.attributes.position.getX(i);
       const y: number = this.geometry.attributes.position.getY(i);
@@ -92,13 +91,13 @@ class Terrain extends Mesh {
 
       const distance: number = new Vector3(x, y, z).distanceTo(new Vector3(0, 0, 0));
 
-      const value: number = (distance - this.min) / (this.max - this.min);
+      const value: number = (distance - planetMin) / (planetMax - planetMin);
 
       const green: Color = new Color(0x46b00c);
       let color: Color = new Color(0xffffff);
       color.lerp(green, 1 - value);
 
-      if (distance <= this.size + 0.000001) color = new Color(0x0000ff);
+      if (distance <= this.size + 0.0000001) color = new Color(0x0000ff);
 
       this.geometry.attributes.color.setXYZ(i, color.r, color.g, color.b);
     }
