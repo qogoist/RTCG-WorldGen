@@ -4,6 +4,8 @@ module.exports = {
   mode: "development",
   devtool: "source-map",
   entry: "./src/main.ts",
+  // entry: "./testsrc/main.ts",
+  // entry: "./test.js",
   module: {
     rules: [
       {
@@ -30,6 +32,7 @@ module.exports = {
     hot: true,
     inline: true,
     watchContentBase: true,
+    https: true,
   },
   plugins: [
     // new HtmlWebpackPlugin({
