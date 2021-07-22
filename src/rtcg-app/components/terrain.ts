@@ -13,7 +13,6 @@ class Terrain extends Mesh {
     const geometry: PlaneGeometry = new PlaneGeometry(2, 2, resolution, resolution);
     const material: MeshStandardMaterial = new MeshStandardMaterial({
       color: 0x616161,
-      // wireframe: true,
       flatShading: true,
       vertexColors: true,
     });
@@ -84,6 +83,40 @@ class Terrain extends Mesh {
   }
 
   public createVertexColors(planetMin: number, planetMax: number): void {
+    const landColors: GradientColor[] = [
+      {
+        stop: 0,
+        color: new Color(0xc2b280), //Sand
+      },
+      {
+        stop: 0.25,
+        color: new Color(0x46b00c), //Green
+      },
+      {
+        stop: 0.5,
+        color: new Color(0x888c8d), //Stone
+      },
+      {
+        stop: 1,
+        color: new Color(0xffffffc), //White
+      },
+    ];
+
+    const oceanColors: GradientColor[] = [
+      {
+        stop: 0,
+        color: new Color(0x00000f), //Dark Blue
+      },
+      {
+        stop: 0.7,
+        color: new Color(0x0000ff), //Medium Blue
+      },
+      {
+        stop: 1,
+        color: new Color(0x2bd5f0), //Teal
+      },
+    ];
+
     for (let i: number = 0; i < this.geometry.attributes.position.count; i++) {
       const x: number = this.geometry.attributes.position.getX(i);
       const y: number = this.geometry.attributes.position.getY(i);
@@ -91,18 +124,46 @@ class Terrain extends Mesh {
 
       const distance: number = new Vector3(x, y, z).distanceTo(new Vector3(0, 0, 0));
 
-      const value: number = (distance - planetMin) / (planetMax - planetMin);
+      let vertexColor: Color = new Color();
 
-      const green: Color = new Color(0x46b00c);
-      let color: Color = new Color(0xffffff);
-      color.lerp(green, 1 - value);
+      if (distance <= this.size)
+        vertexColor = getColor(distance, planetMin, this.size, oceanColors);
+      else vertexColor = getColor(distance, this.size, planetMax, landColors);
 
-      if (distance <= this.size + 0.0000001) color = new Color(0x0000ff);
-
-      this.geometry.attributes.color.setXYZ(i, color.r, color.g, color.b);
+      this.geometry.attributes.color.setXYZ(i, vertexColor.r, vertexColor.g, vertexColor.b);
     }
   }
 }
+
+function getColor(value: number, min: number, max: number, gradient: GradientColor[]): Color {
+  function normalize(v: number, vMin: number, vMax: number): number {
+    return (v - vMin) / (vMax - vMin);
+  }
+
+  const normValue: number = normalize(value, min, max);
+  let color: Color = new Color();
+
+  for (let i: number = 1; i < gradient.length; i++) {
+    let currentColor: GradientColor = gradient[i - 1];
+    let nextColor: GradientColor = gradient[i];
+
+    if (normValue < nextColor.stop || nextColor.stop === 1) {
+      color.lerpColors(
+        currentColor.color,
+        nextColor.color,
+        normalize(normValue, currentColor.stop, nextColor.stop)
+      );
+      break;
+    }
+  }
+
+  return color;
+}
+
+type GradientColor = {
+  stop: number;
+  color: Color;
+};
 
 type NoiseFilterLayer = {
   filter: INoiseFilter;

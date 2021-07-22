@@ -25,7 +25,7 @@ class Planet extends Object3D {
     ];
 
     for (let i: number = 0; i < 6; i++) {
-      const side: Terrain = new Terrain(directions[i], size, 256);
+      const side: Terrain = new Terrain(directions[i], size, 128);
       side.addNoiseFilter(
         new SimpleNoiseFilter(this.planetSeed, 2.34, 1.3, 0.1, 8, 0.37, 0.8),
         true,

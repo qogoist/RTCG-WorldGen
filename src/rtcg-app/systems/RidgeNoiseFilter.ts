@@ -48,7 +48,8 @@ class RidgeNoiseFilter implements INoiseFilter {
       weight = v;
     }
 
-    value = Math.max(0, value - this.minVal);
+    // value = Math.max(0, value - this.minVal);
+    value = value - this.minVal;
 
     return value * this.strength;
   }
