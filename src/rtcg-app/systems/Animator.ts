@@ -1,8 +1,7 @@
 import { Camera, Clock, Object3D, WebGLRenderer } from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 interface IAnimationObject {
-  object: Object3D;
+  object: any;
   tick: (delta: number, time: number) => void;
 }
 
@@ -12,20 +11,17 @@ class Animator {
   private scene: Object3D;
   private camera: Camera;
   private clock: Clock;
-  private controls: OrbitControls;
 
-  constructor(renderer: WebGLRenderer, scene: Object3D, camera: Camera, controls: OrbitControls) {
+  constructor(renderer: WebGLRenderer, scene: Object3D, camera: Camera) {
     this.objects = [];
     this.clock = new Clock();
     this.renderer = renderer;
     this.scene = scene;
     this.camera = camera;
-    this.controls = controls;
   }
   start(): void {
     this.renderer.setAnimationLoop(() => {
       this.tick();
-      this.controls.update();
       this.renderer.render(this.scene, this.camera);
     });
   }
