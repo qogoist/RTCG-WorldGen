@@ -54771,7 +54771,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function createCamera() {
     const camera = new three__WEBPACK_IMPORTED_MODULE_0__.PerspectiveCamera(35, 1, 0.1, 100);
-    camera.position.set(0, 0, 0);
+    camera.position.set(0, 0, 10);
     camera.lookAt(0, 0, -10);
     camera.up.set(0, 1, 0);
     return camera;
@@ -55022,12 +55022,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var three_examples_jsm_controls_OrbitControls__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three/examples/jsm/controls/OrbitControls */ "./node_modules/three/examples/jsm/controls/OrbitControls.js");
+
 
 function createOrbitControls(camera, canvas) {
     const controls = new three_examples_jsm_controls_OrbitControls__WEBPACK_IMPORTED_MODULE_0__.OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.target.add(new three__WEBPACK_IMPORTED_MODULE_1__.Vector3(0, 0, -10));
     return controls;
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createOrbitControls);
