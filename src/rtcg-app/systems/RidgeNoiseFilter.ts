@@ -2,6 +2,7 @@ import { makeNoise3D, Noise3D } from "open-simplex-noise";
 import { Vector3 } from "three";
 import INoiseFilter from "./INoiseFilter";
 
+//Works similarly to SimpleNoiseFilter but the vale on each noise layer is modified to create ridges.
 class RidgeNoiseFilter implements INoiseFilter {
   private noise: Noise3D;
   private roughness: number;

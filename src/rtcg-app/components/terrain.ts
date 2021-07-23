@@ -1,6 +1,9 @@
+import type { GradientColor, NoiseFilterLayer } from "../types";
+
 import { BufferAttribute, Color, Mesh, PlaneGeometry, MeshStandardMaterial, Vector3 } from "three";
 import INoiseFilter from "../systems/INoiseFilter";
 
+//Creates a side of terrain of the planet.
 class Terrain extends Mesh {
   public min: number;
   public max: number;
@@ -34,6 +37,10 @@ class Terrain extends Mesh {
     this.receiveShadow = true;
   }
 
+  //Turns the geometry to look in the direction of the localUp-vector, then loops over all the vertices.
+  //Forces all vertices on a unit sphere around the planet via normalization.
+  //Then loops over all the noise filters in the library and modifies the vector n accordingly.
+  //Finally sets the position of the vertices, as well as the normal (to avoid shading issues).
   public buildMesh(): void {
     this.geometry.lookAt(this.localUp);
 
@@ -74,6 +81,7 @@ class Terrain extends Mesh {
     }
   }
 
+  //Adds a noise filter to the library.
   public addNoiseFilter(
     filter: INoiseFilter,
     isMask: boolean = false,
@@ -82,41 +90,13 @@ class Terrain extends Mesh {
     this.noiseFilters.push({ filter, isMask, useMask });
   }
 
-  public createVertexColors(planetMin: number, planetMax: number): void {
-    const landColors: GradientColor[] = [
-      {
-        stop: 0,
-        color: new Color(0xc2b280), //Sand
-      },
-      {
-        stop: 0.25,
-        color: new Color(0x46b00c), //Green
-      },
-      {
-        stop: 0.5,
-        color: new Color(0x888c8d), //Stone
-      },
-      {
-        stop: 1,
-        color: new Color(0xffffffc), //White
-      },
-    ];
-
-    const oceanColors: GradientColor[] = [
-      {
-        stop: 0,
-        color: new Color(0x00000f), //Dark Blue
-      },
-      {
-        stop: 0.7,
-        color: new Color(0x0000ff), //Medium Blue
-      },
-      {
-        stop: 1,
-        color: new Color(0x2bd5f0), //Teal
-      },
-    ];
-
+  //Loops over the vertices and adjusts their color according to the height (distance to (0,0,0)).
+  public createVertexColors(
+    planetMin: number,
+    planetMax: number,
+    oceanColors: GradientColor[],
+    landColors: GradientColor[]
+  ): void {
     for (let i: number = 0; i < this.geometry.attributes.position.count; i++) {
       const x: number = this.geometry.attributes.position.getX(i);
       const y: number = this.geometry.attributes.position.getY(i);
@@ -135,6 +115,7 @@ class Terrain extends Mesh {
   }
 }
 
+//Gets the color on a  color-gradient according to the given value.
 function getColor(value: number, min: number, max: number, gradient: GradientColor[]): Color {
   function normalize(v: number, vMin: number, vMax: number): number {
     return (v - vMin) / (vMax - vMin);
@@ -159,16 +140,5 @@ function getColor(value: number, min: number, max: number, gradient: GradientCol
 
   return color;
 }
-
-type GradientColor = {
-  stop: number;
-  color: Color;
-};
-
-type NoiseFilterLayer = {
-  filter: INoiseFilter;
-  isMask: boolean;
-  useMask: boolean;
-};
 
 export default Terrain;
